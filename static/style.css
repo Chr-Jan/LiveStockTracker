@@ -86,3 +86,10 @@
 .stock-box p {
     margin: 5px 0;
 }
+
+canvas {
+    background-color: antiquewhite;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 10px;
+}

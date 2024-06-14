@@ -54,76 +54,139 @@ function addTickerToGrid(ticker) {
                     <p id="price-${ticker}" class="current-price"></p>
                 </div>
             </div>
-            <div class="price-label">
-            <p>Procentage</p>
-                        <p id="pct-${ticker}" class="pct-price"></p>
-                        <div>
-
+            <canvas id="chart-${ticker}" width="200" height="100"></canvas>
+            <p id="pct-${ticker}"></p>
             <button class="remove-btn" data-ticker="${ticker}">Remove</button>
         </div>
-    `);
+    `);  
 }
-
 
 function updatePrices() {
     tickers.forEach(function (ticker) {
         $.ajax({
             url: '/get_stock_data',
             type: 'POST',
-            data: JSON.stringify({ 'ticker': ticker }),
+            data: JSON.stringify({'ticker': ticker}),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (data) {
-                updateTicker(ticker, data.currentPrice, data.openPrice);
-            },
-            error: function () {
-                console.error(`Failed to fetch data for ${ticker}`);
+                var changePercent = ((data.currentPrice - data.openPrice) / data.openPrice) * 100;
+                var colorClass;
+                if (changePercent <= -2) {
+                    colorClass = 'dark-red';
+                } else if (changePercent < 0) {
+                    colorClass = 'red';
+                } else if (changePercent === 0) {
+                    colorClass = 'gray';
+                } else if (changePercent <= 2) {
+                    colorClass = 'green';
+                } else {
+                    colorClass = 'dark-green';
+                }
+
+                console.log('History:', data.history);
+                console.log('Change percent:', changePercent);
+                console.log('Line color:', getLineColor(changePercent));
+
+                $(`#prev-price-${ticker}`).text(`$${lastPrices[ticker]?.toFixed(2) || '-'}`);
+                $(`#price-${ticker}`).text(`$${data.currentPrice.toFixed(2)}`);
+                $(`#pct-${ticker}`).text(`${changePercent.toFixed(2)}%`);
+                $(`#price-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
+                $(`#pct-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
+
+                var flashClass;
+                if (lastPrices[ticker] > data.currentPrice) {
+                    flashClass = 'red-flash';
+                } else if (lastPrices[ticker] < data.currentPrice) {
+                    flashClass = 'green-flash';
+                } else {
+                    flashClass = 'gray-flash';
+                }
+                lastPrices[ticker] = data.currentPrice;
+                $(`#${ticker}`).addClass(flashClass);
+
+                setTimeout(function() {
+                    $(`#${ticker}`).removeClass(flashClass);
+                }, 1000);
+
+                // Generate the sparkline chart
+                if (data.history) {
+                    updateChart(ticker, data.history, changePercent);
+                }
             }
         });
     });
 }
 
-function updateTicker(ticker, currentPrice, openPrice) {
-    var changePercent = ((currentPrice - openPrice) / openPrice) * 100;
-    var colorClass = getColorClass(changePercent);
 
-    var prevPrice = lastPrices[ticker] ? `$${lastPrices[ticker].toFixed(2)}` : 'N/A';
-    $(`#prev-price-${ticker}`).text(prevPrice);
-
-    $(`#price-${ticker}`).text(`$${currentPrice.toFixed(2)}`);
-    $(`#pct-${ticker}`).text(`${changePercent.toFixed(2)}%`);
-    $(`#price-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
-    $(`#pct-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
-
-    var flashClass = getFlashClass(ticker, currentPrice);
-    lastPrices[ticker] = currentPrice;
-    $(`#${ticker}`).addClass(flashClass);
-
-    setTimeout(function () {
-        $(`#${ticker}`).removeClass(flashClass);
-    }, 1000);
-}
-
-function getColorClass(changePercent) {
+/**
+ * Determines the color of a line based on the percentage change in value.
+ * Returns different colors for various ranges of percentage change.
+ * @param {number} changePercent - The percentage change.
+ * @returns {string} - The color code based on the changePercent.
+ */
+function getLineColor(changePercent) {
     if (changePercent <= -2) {
-        return 'dark-red';
+        return '#8B0000'; // dark-red
     } else if (changePercent < 0) {
-        return 'red';
+        return '#FF6347'; // red
     } else if (changePercent === 0) {
-        return 'gray';
+        return 'gray'; // gray
     } else if (changePercent <= 2) {
-        return 'green';
+        return '#32CD32'; // green
     } else {
-        return 'dark-green';
+        return '#006400'; // dark-green
     }
 }
 
-function getFlashClass(ticker, currentPrice) {
-    if (lastPrices[ticker] > currentPrice) {
-        return 'red-flash';
-    } else if (lastPrices[ticker] < currentPrice) {
-        return 'green-flash';
+
+function updateChart(ticker, history, changePercent) {
+    const ctx = document.getElementById(`chart-${ticker}`).getContext('2d');
+    const lineColor = getLineColor(changePercent);
+
+    console.log('History for chart:', history);
+    console.log('Change percent for chart:', changePercent);
+    console.log('Line color for chart:', lineColor);
+
+    if (!window.charts) {
+        window.charts = {};
+    }
+
+    if (window.charts[ticker]) {
+        window.charts[ticker].data.datasets[0].data = history;
+        window.charts[ticker].data.datasets[0].borderColor = lineColor;
+        window.charts[ticker].update();
     } else {
-        return 'gray-flash';
+        window.charts[ticker] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: history.map((_, index) => index),
+                datasets: [{
+                    data: history,
+                    borderColor: lineColor,
+                    fill: false
+                }]
+            },
+            options: {
+                elements: {
+                    point: {
+                        radius: 0 // Hide the points on the line
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
     }
 }
