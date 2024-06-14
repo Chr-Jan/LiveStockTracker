@@ -1,0 +1,31 @@
+# Virtual environment
+venv/
+
+# IDE/Editor files
+.vscode/
+.idea/
+
+# Dependency files
+pip-lock.txt
+requirements.txt
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Sensitive information
+.env
+config.py
+
+# Compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Compiled/minified static assets
+*.min.js
+*.min.css
+
+# User-specific files
+.bash_history
+.bashrc
