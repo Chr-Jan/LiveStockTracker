@@ -28,7 +28,7 @@
 2. **Monitor Prices:** View live updates and historical trends.
 3. **Remove Stocks:** Click "Remove" to stop tracking a stock.
 
-### Example Image
+## Example Image
 ![Example Image](github_images/image.png)
 
 ## License
