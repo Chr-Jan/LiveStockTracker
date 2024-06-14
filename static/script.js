@@ -54,11 +54,19 @@ function addTickerToGrid(ticker) {
                     <p id="price-${ticker}" class="current-price"></p>
                 </div>
             </div>
-            <canvas id="chart-${ticker}" width="200" height="100"></canvas>
+            <div class="price-label">
+                <p>5 days movement</p>
+                <canvas id="chart-${ticker}" width="200" height="100"></canvas>
+            </div>
+            <div>
+                <p>Procentage</p>
             <p id="pct-${ticker}"></p>
+            </div>
+            <div class="button-container">
             <button class="remove-btn" data-ticker="${ticker}">Remove</button>
+            </div>
         </div>
-    `);  
+    `);
 }
 
 function updatePrices() {
@@ -66,7 +74,7 @@ function updatePrices() {
         $.ajax({
             url: '/get_stock_data',
             type: 'POST',
-            data: JSON.stringify({'ticker': ticker}),
+            data: JSON.stringify({ 'ticker': ticker }),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (data) {
@@ -83,10 +91,6 @@ function updatePrices() {
                 } else {
                     colorClass = 'dark-green';
                 }
-
-                console.log('History:', data.history);
-                console.log('Change percent:', changePercent);
-                console.log('Line color:', getLineColor(changePercent));
 
                 $(`#prev-price-${ticker}`).text(`$${lastPrices[ticker]?.toFixed(2) || '-'}`);
                 $(`#price-${ticker}`).text(`$${data.currentPrice.toFixed(2)}`);
@@ -105,7 +109,7 @@ function updatePrices() {
                 lastPrices[ticker] = data.currentPrice;
                 $(`#${ticker}`).addClass(flashClass);
 
-                setTimeout(function() {
+                setTimeout(function () {
                     $(`#${ticker}`).removeClass(flashClass);
                 }, 1000);
 
@@ -143,10 +147,6 @@ function getLineColor(changePercent) {
 function updateChart(ticker, history, changePercent) {
     const ctx = document.getElementById(`chart-${ticker}`).getContext('2d');
     const lineColor = getLineColor(changePercent);
-
-    console.log('History for chart:', history);
-    console.log('Change percent for chart:', changePercent);
-    console.log('Line color for chart:', lineColor);
 
     if (!window.charts) {
         window.charts = {};
