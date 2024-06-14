@@ -29,7 +29,7 @@
 3. **Remove Stocks:** Click "Remove" to stop tracking a stock.
 
 ## Example Image
-<img src="github_images/image.png" alt="Example Image" style="width: 55%; border-radius: 30px;">
+<img src="github_images/image.png" style="width: 55%; border-radius: 30px;">
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
