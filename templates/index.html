@@ -5,18 +5,17 @@
     <meta charset="UTF-8">
     <title>Stock Price Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script scr="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script scr="{{ url_for('static', filename='script.js') }}"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 
 <body>
     <form id="add-ticker-form">
-        <input type="text" id="new-ticker-input" placeholder="Add ticker" required>
+        <input type="text" id="new-ticker" placeholder="Add Ticker" required>
         <button type="submit">Add</button>
     </form>
-    <p id="timer">Next update in <span id="counter"></span> seconds.</p>
-    <div id="ticker-grid"></div>
+    <p id="timer">Next update in <span id="counter">5</span> seconds.</p>
+    <div id="tickers-grid"></div>
 </body>
 
 </html>
