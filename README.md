@@ -27,3 +27,6 @@
 1. **Add Stocks:** Enter ticker symbols and click "Add".
 2. **Monitor Prices:** View live updates and historical trends.
 3. **Remove Stocks:** Click "Remove" to stop tracking a stock.
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
