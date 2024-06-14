@@ -28,5 +28,8 @@
 2. **Monitor Prices:** View live updates and historical trends.
 3. **Remove Stocks:** Click "Remove" to stop tracking a stock.
 
+## Example Image
+![Example_Image](github_images/image.png)
+
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
