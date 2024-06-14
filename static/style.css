@@ -4,25 +4,26 @@
 }
 
 .stock-box {
-    width: 200px;
-    height: 200px;
+    width: 250px; 
+    height: auto; 
     border: 1px solid #333;
     margin: 10px;
     padding: 10px;
     background: #eee;
     transition: background-color 0.5s;
+    box-sizing: border-box; 
 }
 
 .red {
-    color: #FF6347; 
+    color: #FF6347;
 }
 
 .dark-red {
-    color: #8B0000; 
+    color: #8B0000;
 }
 
 .dark-green {
-    color: #006400; 
+    color: #006400;
 }
 
 .green {
@@ -31,6 +32,19 @@
 
 .gray {
     color: gray;
+}
+
+.prev-price {
+    color: gray;
+    margin-right: 10px;
+    display: inline-block;
+    font-size: 0.8em; 
+}
+
+.current-price {
+    display: inline-block;
+    font-size: 1.8em; 
+    vertical-align: middle;
 }
 
 .red-flash {
@@ -46,4 +60,29 @@
 .gray-flash {
     transition: background-color 1s;
     background-color: #ccc !important;
+}
+
+.price-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-label {
+    text-align: center;
+}
+
+.prev-price {
+    color: gray;
+    display: block;
+    font-size: 0.8em; 
+}
+
+.current-price {
+    display: block;
+    font-size: 1.8em; 
+}
+
+.stock-box p {
+    margin: 5px 0;
 }
