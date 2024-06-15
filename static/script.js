@@ -1,45 +1,52 @@
-var tickers = JSON.parse(localStorage.getItem('tickers')) || [];
-var lastPrices = {};
-var counter = 15;
+// Initialize variables to store tickers, last prices, and counter
+var tickers = JSON.parse(localStorage.getItem('tickers')) || []; // Array of tickers from localStorage or empty array
+var lastPrices = {}; // Object to store last prices for each ticker
+var counter = 15; // Counter for update cycle interval in seconds
 
+// Function to start the update cycle for fetching stock prices
 function startUpdateCycle() {
-    updatePrices();
+    updatePrices(); // Call updatePrices function initially
+    // Set interval to update prices every second
     setInterval(() => {
-        counter--;
-        $('#counter').text(counter);
-        if (counter <= 0) {
-            updatePrices();
-            counter = 15;
+        counter--; // Decrement the counter
+        $('#counter').text(counter); // Update counter display in HTML
+        if (counter <= 0) { // When counter reaches zero
+            updatePrices(); // Update prices
+            counter = 15; // Reset counter to 15 seconds
         }
-    }, 1000);
+    }, 1000); // Interval set to 1000 milliseconds (1 second)
 }
 
 $(document).ready(function () {
-    tickers.forEach(addTickerToGrid);
-    updatePrices();
+    // Execute when DOM is fully loaded
+    tickers.forEach(addTickerToGrid); // Add existing tickers to the grid
+    updatePrices(); // Update prices initially
 
+    // Handle form submission to add new ticker
     $('#add-ticker-form').submit(function (e) {
-        e.preventDefault();
-        var newTicker = $('#new-ticker').val().toUpperCase();
-        if (!tickers.includes(newTicker)) {
-            tickers.push(newTicker);
-            localStorage.setItem('tickers', JSON.stringify(tickers));
-            addTickerToGrid(newTicker);
-            updatePrices();
+        e.preventDefault(); // Prevent default form submission
+        var newTicker = $('#new-ticker').val().toUpperCase(); // Get new ticker symbol and convert to uppercase
+        if (!tickers.includes(newTicker)) { // If new ticker is not already in the list
+            tickers.push(newTicker); // Add new ticker to the tickers array
+            localStorage.setItem('tickers', JSON.stringify(tickers)); // Update tickers in localStorage
+            addTickerToGrid(newTicker); // Add new ticker to the grid
+            updatePrices(); // Update prices with new ticker data
         }
-        $('#new-ticker').val('');
+        $('#new-ticker').val(''); // Clear input field after submission
     });
 
+    // Handle click event to remove ticker from grid
     $('#tickers-grid').on('click', '.remove-btn', function () {
-        var tickerToRemove = $(this).data('ticker');
-        tickers = tickers.filter(t => t !== tickerToRemove);
-        localStorage.setItem('tickers', JSON.stringify(tickers));
-        $(`#${tickerToRemove}`).remove();
+        var tickerToRemove = $(this).data('ticker'); // Get ticker symbol to remove
+        tickers = tickers.filter(t => t !== tickerToRemove); // Filter out the ticker to remove
+        localStorage.setItem('tickers', JSON.stringify(tickers)); // Update tickers in localStorage
+        $(`#${tickerToRemove}`).remove(); // Remove ticker element from the grid
     });
 
-    startUpdateCycle();
+    startUpdateCycle(); // Start the update cycle for fetching prices
 });
 
+// Function to add ticker element to the grid
 function addTickerToGrid(ticker) {
     $('#tickers-grid').append(`
         <div id="${ticker}" class="stock-box">
@@ -59,16 +66,17 @@ function addTickerToGrid(ticker) {
                 <canvas id="chart-${ticker}" width="200" height="100"></canvas>
             </div>
             <div>
-                <p>Procentage</p>
-            <p id="pct-${ticker}"></p>
+                <p>Percentage</p>
+                <p id="pct-${ticker}"></p>
             </div>
             <div class="button-container">
-            <button class="remove-btn" data-ticker="${ticker}">Remove</button>
+                <button class="remove-btn" data-ticker="${ticker}">Remove</button>
             </div>
         </div>
     `);
 }
 
+// Function to update stock prices and related information
 function updatePrices() {
     tickers.forEach(function (ticker) {
         $.ajax({
@@ -78,8 +86,10 @@ function updatePrices() {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (data) {
-                var changePercent = ((data.currentPrice - data.openPrice) / data.openPrice) * 100;
-                var colorClass;
+                var changePercent = ((data.currentPrice - data.openPrice) / data.openPrice) * 100; // Calculate percentage change
+                var colorClass; // Variable to store color class based on change percent
+
+                // Determine color class based on percentage change
                 if (changePercent <= -2) {
                     colorClass = 'dark-red';
                 } else if (changePercent < 0) {
@@ -92,13 +102,16 @@ function updatePrices() {
                     colorClass = 'dark-green';
                 }
 
+                // Update HTML elements with stock information
                 $(`#prev-price-${ticker}`).text(`$${lastPrices[ticker]?.toFixed(2) || '-'}`);
                 $(`#price-${ticker}`).text(`$${data.currentPrice.toFixed(2)}`);
                 $(`#pct-${ticker}`).text(`${changePercent.toFixed(2)}%`);
                 $(`#price-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
                 $(`#pct-${ticker}`).removeClass('dark-red red green dark-green gray').addClass(colorClass);
 
-                var flashClass;
+                var flashClass; // Variable to store flash class for price change indication
+
+                // Determine flash class based on price change
                 if (lastPrices[ticker] > data.currentPrice) {
                     flashClass = 'red-flash';
                 } else if (lastPrices[ticker] < data.currentPrice) {
@@ -106,14 +119,16 @@ function updatePrices() {
                 } else {
                     flashClass = 'gray-flash';
                 }
-                lastPrices[ticker] = data.currentPrice;
-                $(`#${ticker}`).addClass(flashClass);
 
+                lastPrices[ticker] = data.currentPrice; // Update last price for the ticker
+                $(`#${ticker}`).addClass(flashClass); // Add flash class to indicate price change
+
+                // Remove flash class after 1 second
                 setTimeout(function () {
                     $(`#${ticker}`).removeClass(flashClass);
                 }, 1000);
 
-                // Generate the sparkline chart
+                // Generate the sparkline chart if historical data is available
                 if (data.history) {
                     updateChart(ticker, data.history, changePercent);
                 }
@@ -121,7 +136,6 @@ function updatePrices() {
         });
     });
 }
-
 
 /**
  * Determines the color of a line based on the percentage change in value.
@@ -143,47 +157,65 @@ function getLineColor(changePercent) {
     }
 }
 
-
+/**
+ * Update the Chart.js chart with historical data and styling based on percentage change.
+ * @param {string} ticker - The stock ticker symbol.
+ * @param {number[]} history - Array of historical prices.
+ * @param {number} changePercent - The percentage change in price.
+ */
 function updateChart(ticker, history, changePercent) {
-    const ctx = document.getElementById(`chart-${ticker}`).getContext('2d');
-    const lineColor = getLineColor(changePercent);
+    const ctx = document.getElementById(`chart-${ticker}`).getContext('2d'); // Get canvas context
+    const lineColor = getLineColor(changePercent); // Determine line color based on percentage change
 
     if (!window.charts) {
-        window.charts = {};
+        window.charts = {}; // Initialize charts object if not already initialized
     }
 
+    // Check if chart for the ticker already exists
     if (window.charts[ticker]) {
+        // Update existing chart with new data and styling
         window.charts[ticker].data.datasets[0].data = history;
         window.charts[ticker].data.datasets[0].borderColor = lineColor;
-        window.charts[ticker].update();
+        window.charts[ticker].update(); // Update chart
     } else {
+        // Create new Chart.js instance for the ticker
         window.charts[ticker] = new Chart(ctx, {
-            type: 'line',
+            type: 'line', // Chart type
             data: {
-                labels: history.map((_, index) => index),
+                labels: history.map((_, index) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() - history.length + index + 1); // Adjust date based on history length
+                    return date.toLocaleDateString('en-US', { weekday: 'short' }); // Display short weekday name
+                }),
                 datasets: [{
-                    data: history,
-                    borderColor: lineColor,
-                    fill: false
+                    data: history, // Historical price data
+                    borderColor: lineColor, // Line color
+                    fill: false // Do not fill area under the line
                 }]
             },
             options: {
-                elements: {
-                    point: {
-                        radius: 0 // Hide the points on the line
-                    }
-                },
                 scales: {
                     x: {
-                        display: false
+                        title: {
+                            display: true,
+                            text: 'Days' // X-axis title
+                        }
                     },
                     y: {
-                        display: false
+                        title: {
+                            display: true,
+                            text: 'Price' // Y-axis title
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0 // Hide points on the line
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: false // Hide legend
                     }
                 }
             }

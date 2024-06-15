@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stock Price Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Stock Price Tracker</title>  <!-- Title of the HTML page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- Link to the external CSS file -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  <!-- Include jQuery library -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>  <!-- Link to the external JavaScript file -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- Include Chart.js library for creating charts -->
 </head>
 <body>
-    <form id="add-ticker-form">
-        <input type="text" id="new-ticker" placeholder="Add Ticker" required>
-        <button type="submit">Add</button>
+    <form id="add-ticker-form">  <!-- Form for adding a new ticker -->
+        <input type="text" id="new-ticker" placeholder="Add Ticker" required>  <!-- Input field for entering new ticker symbol -->
+        <button type="submit">Add</button>  <!-- Submit button to add new ticker -->
     </form>
-    <p id="timer">Next update in <span id="counter"></span> seconds.</p>
-    <div id="tickers-grid"></div>
+    <p id="timer">Next update in <span id="counter"></span> seconds.</p>  <!-- Paragraph to display countdown timer for next update -->
+    <div id="tickers-grid"></div>  <!-- Container div where tickers will be dynamically added -->
 </body>
 </html>
