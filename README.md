@@ -22,23 +22,15 @@
 ## Deployment
 - **Local Setup:** Clone the repository, install dependencies, run Flask app.
   1. Clone the repository:
-      ```bash
-      git clone <repository_url>
-      cd <repository_directory>
-      ```
+
   2. Create a virtual environment and activate it:
-      ```bash
-      python -m venv venv
-      source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-      ```
+
   3. Install the required dependencies:
       ```bash
       pip install Flask yfinance
       ```
   4. Run the Flask app:
-      ```bash
-      flask run
-      ```
+
 - **Production Deployment:** Host Flask app on a web server, ensure backend endpoints are reachable.
 
 ## Usage
