@@ -21,6 +21,24 @@
 
 ## Deployment
 - **Local Setup:** Clone the repository, install dependencies, run Flask app.
+  1. Clone the repository:
+      ```bash
+      git clone <repository_url>
+      cd <repository_directory>
+      ```
+  2. Create a virtual environment and activate it:
+      ```bash
+      python -m venv venv
+      source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+      ```
+  3. Install the required dependencies:
+      ```bash
+      pip install Flask yfinance
+      ```
+  4. Run the Flask app:
+      ```bash
+      flask run
+      ```
 - **Production Deployment:** Host Flask app on a web server, ensure backend endpoints are reachable.
 
 ## Usage
@@ -29,7 +47,7 @@
 3. **Remove Stocks:** Click "Remove" to stop tracking a stock.
 
 ## Example Image
-<img src="github_images/image.png" style="width: 55%;">
+![Example Image](github_images/image_rounded.png)
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
